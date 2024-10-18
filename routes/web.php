@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +16,21 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // return view('welcome');
+    return redirect('home');
+});
+
+Auth::routes();
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::middleware('auth')->group(function() {
+    Route::get('/home', [HomeController::class, 'index']);
+
+    Route::prefix('/categoria')->group(function(){
+        Route::get('/listado', [CategoriaController::class, 'listado']);
+        Route::post('/ajaxListado', [CategoriaController::class, 'ajaxListado']);
+        Route::post('/agregarCategoria', [CategoriaController::class, 'agregarCategoria']);
+    });
+
 });
