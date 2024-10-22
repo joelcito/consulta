@@ -16,9 +16,7 @@ class DocumentoController extends Controller
         return view('documento.listado');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function ajaxListado(Request $request)
     {
         if($request->ajax()){
