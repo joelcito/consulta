@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,12 @@ Route::middleware('auth')->group(function() {
         Route::get('/listado', [CategoriaController::class, 'listado']);
         Route::post('/ajaxListado', [CategoriaController::class, 'ajaxListado']);
         Route::post('/agregarCategoria', [CategoriaController::class, 'agregarCategoria']);
+    });
+
+    Route::prefix('/documento')->group(function(){
+        Route::get('/listado', [DocumentoController::class, 'listado']);
+        Route::post('/ajaxListado', [DocumentoController::class, 'ajaxListado']);
+        Route::post('/agregarCategoria', [DocumentoController::class, 'agregarDocumento']);
     });
 
 });
