@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,11 @@ Route::middleware('auth')->group(function() {
         Route::get('/listado', [DocumentoController::class, 'listado']);
         Route::post('/ajaxListado', [DocumentoController::class, 'ajaxListado']);
         Route::post('/agregarDocumento', [DocumentoController::class, 'agregarDocumento']);
+    });
+
+    Route::prefix('/chat')->group(function(){
+        Route::get('/consulta', [ChatController::class, 'consulta']);
+        Route::post('/getResponse', [ChatController::class, 'getResponse']);
     });
 
 });
