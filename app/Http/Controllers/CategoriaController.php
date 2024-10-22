@@ -31,7 +31,6 @@ class CategoriaController extends Controller
 
     public function agregarCategoria(Request $request){
         if($request->ajax()){
-            // dd($request->all());
             $nombre       = $request->input('nombre');
             $descripcion  = $request->input('descripcion');
             $categoria_id = $request->input('categoria_id');

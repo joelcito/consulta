@@ -21,12 +21,12 @@
                     </div>
                 </div>
                 <div class="modal-body scroll-y">
-                    <form id="formulario_new_categoria" >
+                    <form id="formulario_new_documento" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-12">
                                 <label class="fs-6 fw-semibold form-label mb-2 required">Nombre</label>
                                 <input type="text" class="form-control fw-bold form-control-solid" name="nombre" id="nombre" required>
-                                <input type="hidden" name="categoria_id" id="categoria_id">
+                                <input type="text" name="documento_id" id="documento_id">
                             </div>
                         </div>
                         <div class="row mt-5">
@@ -37,13 +37,23 @@
                         </div>
                         <div class="row mt-5">
                             <div class="col-md-12">
+                                <label class="fs-6 fw-semibold form-label mb-2 required">Categoria</label>
+                                <select name="categoria_id" id="categoria_id" class="form-control">
+                                    @foreach ($categorias as $c)
+                                        <option value="{{ $c->id }}">{{ $c->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-md-12">
                                 <label class="fs-6 fw-semibold form-label mb-2 required">Documento</label>
                                 <input type="file" class="form-control fw-bold form-control-solid" name="documento" id="documento" accept=".pdf" required>
                             </div>
                         </div>
                         <div class="row mt-5">
                             <div class="col-md-12">
-                                <button type="button" class="btn btn-success w-100 btn-sm" onclick="agregarCategoria()">Generar</button>
+                                <button type="button" class="btn btn-success w-100 btn-sm" onclick="agregarDocumento()">Generar</button>
                             </div>
                         </div>
                     </form>
@@ -134,19 +144,23 @@
         function modalCategoria(){
             $('#nombre').val("")
             $('#descripcion').val("")
-            $('#categoria_id').val(0)
+            $('#documento_id').val(0)
+            $('#documento').val(null)
             $('#modal_new_categoria').modal('show')
         }
 
-        function agregarCategoria(){
-            if($("#formulario_new_categoria")[0].checkValidity()){
+        function agregarDocumento(){
+            if($("#formulario_new_documento")[0].checkValidity()){
 
-                let datos = $('#formulario_new_categoria').serializeArray();
+                // let datos = $('#formulario_new_documento').serializeArray();
+                let datos = new FormData($('#formulario_new_documento')[0]);
 
                 $.ajax({
-                    url   : "{{ url('categoria/agregarCategoria') }}",
-                    method: "POST",
-                    data  : datos,
+                    url        : "{{ url('documento/agregarDocumento') }}",
+                    method     : "POST",
+                    data       : datos,
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
 
                         console.log(data)
@@ -176,7 +190,7 @@
                 })
 
             }else{
-                $("#formulario_new_categoria")[0].reportValidity();
+                $("#formulario_new_documento")[0].reportValidity();
             }
         }
    </script>

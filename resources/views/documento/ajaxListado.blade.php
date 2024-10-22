@@ -5,15 +5,19 @@
             <th>Categoria</th>
             <th>Nombre</th>
             <th>Descripcion</th>
+            <th>Archivo</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody class="text-gray-600 fw-semibold">
         @forelse ( $documentos as $d)
             <tr>
-                <td>{{ $d->nombre }}</td>
+                <td>{{ $d->categoria->nombre }}</td>
                 <td>{{ $d->descripcion }}</td>
                 <td>{{ $d->descripcion }}</td>
+                <td>
+                    <a href="{{ asset($d->documento) }}" target="_blank" class="btn btn-danger btn-icon btn-sm"><i class="fa fa-file-pdf"></i></a>
+                </td>
                 <td>
 
                 </td>
