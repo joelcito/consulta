@@ -124,10 +124,10 @@
     <div class="sidebar">
         <h2>Menú</h2>
         <ul>
-            <li><a href="#">Generar script DBeaver</a></li>
+            {{-- <li><a href="#">Generar script DBeaver</a></li>
             <li><a href="#">Rastrear usuarios en cPanel</a></li>
             <li><a href="#">Error CORS en solicitud</a></li>
-            <li><a href="#">Factorización de una expresión</a></li>
+            <li><a href="#">Factorización de una expresión</a></li> --}}
             @foreach ( $documentos as  $d)
                 <li><a href="#">{{ $d->nombre }}</a></li>
             @endforeach
@@ -203,9 +203,12 @@
             },
             success: function(data) {
 
+                console.log(data.responses[0].response);
+
                 // LIMPIAMOS LA CACHE
                 $('#texto').html("")
-                let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
+                // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
+                let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
                 let velocidad = 100; // Velocidad de escritura (milisegundos)
 
                 metodoEscribiendo(mensajeDevuelto, 0, velocidad);
