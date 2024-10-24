@@ -42,12 +42,19 @@ class ChatController extends Controller
        // Recorrer los archivos y extraer el texto
        foreach ($files as $filePath) {
            // Extraer el texto del PDF
-           try {
-               $pdf = $parser->parseFile($filePath); // Asegúrate de que esto se llame correctamente
-               $pdfText = $pdf->getText();
-           } catch (\Exception $e) {
-               return response()->json(['error' => 'Error al procesar el PDF: ' . $e->getMessage()], 500);
-           }
+            try {
+                $pdf     = $parser->parseFile($filePath);  // Asegúrate de que esto se llame correctamente
+                $pdfText = $pdf->getText();
+
+                 // Convertir el texto extraído a UTF-8
+                $pdfText = mb_convert_encoding($pdfText, 'UTF-8', 'auto');
+
+                // // Eliminar caracteres no válidos
+                // $pdfText = iconv('UTF-8', 'UTF-8//IGNORE', $pdfText);
+
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Error al procesar el PDF: ' . $e->getMessage()], 500);
+            }
 
            // Aquí iría la lógica para enviar el texto a OpenAI
            $response = $this->sendToOpenAI($request->input('message'), $pdfText);
