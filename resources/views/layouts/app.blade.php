@@ -65,7 +65,7 @@
 				<!--begin::Header-->
 				<div id="kt_app_header" class="app-header" data-kt-sticky="true" data-kt-sticky-activate="{default: true, lg: true}" data-kt-sticky-name="app-header-minimize" data-kt-sticky-offset="{default: '200px', lg: '0'}" data-kt-sticky-animation="false">
 					<!--begin::Header container-->
-					<div class="app-container container-fluid d-flex align-items-stretch justify-content-between bg-primary" id="kt_app_header_container">
+					<div class="app-container container-fluid d-flex align-items-stretch justify-content-between" id="kt_app_header_container">
 						<!--begin::Sidebar mobile toggle-->
 						<div class="d-flex align-items-center d-lg-none ms-n3 me-1 me-md-2" title="Show sidebar menu">
 							<div class="btn btn-icon btn-active-color-primary w-35px h-35px" id="kt_app_sidebar_mobile_toggle">
@@ -235,7 +235,7 @@
 					<!--begin::Sidebar-->
 					<div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
 						<!--begin::Logo-->
-						<div class="app-sidebar-logo px-6 bg-primary" id="kt_app_sidebar_logo">
+						<div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
 							<!--begin::Logo image-->
 							<a href="{{ url('home') }}">
 								<div class="row mt-5">
@@ -424,7 +424,7 @@
 												<!--end::User-->
 												<!--begin::User-->
 												<div class="symbol symbol-circle symbol-25px">
-													<div class="symbol-label fs-8 fw-semibold bg-primary text-inverse-primary">A</div>
+													<div class="symbol-label fs-8 fw-semibold text-inverse-primary">A</div>
 												</div>
 												<!--end::User-->
 											</div>
