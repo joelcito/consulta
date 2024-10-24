@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function() {
     Route::prefix('/chat')->group(function(){
         Route::get('/consulta', [ChatController::class, 'consulta']);
         Route::post('/getResponse', [ChatController::class, 'getResponse']);
+
+        Route::post('/subirArchivo', [ChatController::class, 'subirArchivo']);
+        Route::post('/enviarConsulta', [ChatController::class, 'enviarConsulta']);
     });
 
 });

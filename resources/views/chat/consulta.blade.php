@@ -194,26 +194,55 @@
 
         var message = $('#message').val();
 
+        // $.ajax({
+        //     url: "{{ url('chat/getResponse') }}",
+        //     type: 'POST',
+        //     data: {
+        //         message: message,
+        //         _token: '{{ csrf_token() }}'
+        //     },
+        //     success: function(data) {
+
+        //         console.log(data.responses[0].response);
+
+        //         // LIMPIAMOS LA CACHE
+        //         $('#texto').html("")
+        //         // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
+        //         let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
+        //         let velocidad = 100; // Velocidad de escritura (milisegundos)
+
+        //         metodoEscribiendo(mensajeDevuelto, 0, velocidad);
+
+        //         // $('#response').html('<p>Respuesta de ChatGPT: ' + data.response + '</p>');
+        //     },
+        //     error: function() {
+        //         $('#response').html('<p>Error al obtener la respuesta de ChatGPT.</p>');
+        //     }
+        // });
+
         $.ajax({
-            url: "{{ url('chat/getResponse') }}",
+            url: "{{ url('chat/enviarConsulta') }}",
             type: 'POST',
             data: {
                 message: message,
-                _token: '{{ csrf_token() }}'
+                _token : '{{ csrf_token() }}'
             },
             success: function(data) {
 
-                console.log(data.responses[0].response);
+                console.log(data);
 
-                // LIMPIAMOS LA CACHE
-                $('#texto').html("")
-                // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
-                let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
-                let velocidad = 100; // Velocidad de escritura (milisegundos)
 
-                metodoEscribiendo(mensajeDevuelto, 0, velocidad);
+                // console.log(data.responses[0].response);
 
-                // $('#response').html('<p>Respuesta de ChatGPT: ' + data.response + '</p>');
+                // // LIMPIAMOS LA CACHE
+                // $('#texto').html("")
+                // // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
+                // let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
+                // let velocidad = 100; // Velocidad de escritura (milisegundos)
+
+                // metodoEscribiendo(mensajeDevuelto, 0, velocidad);
+
+                // // $('#response').html('<p>Respuesta de ChatGPT: ' + data.response + '</p>');
             },
             error: function() {
                 $('#response').html('<p>Error al obtener la respuesta de ChatGPT.</p>');
