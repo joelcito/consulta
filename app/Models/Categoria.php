@@ -9,4 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Categoria extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class);
+    }
 }

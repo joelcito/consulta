@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria;
 use App\Models\Chat;
 use App\Models\Documento;
 use GuzzleHttp\Client;
@@ -19,8 +20,9 @@ class ChatController extends Controller
     public function consulta(Request $request){
 
         $documentos = Documento::all();
+        $categorias = Categoria::all();
 
-        return view('chat.consulta')->with(compact('documentos'));
+        return view('chat.consulta')->with(compact('documentos', 'categorias'));
     }
 
     public function getResponse(Request $request)
@@ -255,10 +257,17 @@ class ChatController extends Controller
     // }
 
 
-    public function subirArchivo(Request $request)
+    public function subirArchivo(Documento $documento)
     {
+
         // Ruta del archivo PDF en tu proyecto
-        $rutaArchivo = public_path('assets/docs/1.-LEY_N°_843-08-24_unlocked.pdf'); // Ajusta esta ruta según sea necesario
+        // $rutaArchivo = public_path('assets/docs/1.-LEY_N°_843-08-24_unlocked.pdf'); // Ajusta esta ruta según sea necesario
+        $rutaArchivo = public_path($documento->documento);
+        // $rutaArchivo1 = public_path('assets/docs/1729883963_tarea2.pdf');
+
+        // dd($documento, $documento->documento, $rutaArchivo, $rutaArchivo1);
+
+
 
         // Crear un cliente Guzzle
         $client = new Client();
@@ -267,7 +276,8 @@ class ChatController extends Controller
         $headers = [
             // 'clave-x-api' => env('CHATPDF_API_KEY'), // Reemplaza con tu clave API
             'x-api-key' => "sec_C9VlPVIwkXzkuEfOxBsCbKZnQgZC8sqt", // Reemplaza con tu clave API
-            "Content-Type"=> "application/json",
+            // 'x-api-key' => env('CHATPDF_API_KEY'), // Reemplaza con tu clave API
+            // "Content-Type"=> "application/json",
         ];
 
         try {
@@ -284,66 +294,160 @@ class ChatController extends Controller
             ]);
 
             // Obtener el cuerpo de la respuesta
-            $data = json_decode($response->getBody()->getContents(), true);
-            return response()->json(['sourceId' => $data['sourceId']]);
+            $datos = json_decode($response->getBody()->getContents(), true);
+            // return response()->json(['sourceId' => $datos['sourceId']]);
+
+            $data['estado'] = 'success';
+            $data['response'] = json_decode($response->getBody()->getContents(), true);
+            $data['sourceId'] = $datos['sourceId'];
+
         } catch (RequestException $e) {
             // Manejo de errores
             if ($e->hasResponse()) {
-                return response()->json([
-                    'error' => $e->getMessage(),
-                    'response' => json_decode($e->getResponse()->getBody()->getContents(), true),
-                ], $e->getResponse()->getStatusCode());
+                // return response()->json([
+                //     'error' => $e->getMessage(),
+                //     'response' => json_decode($e->getResponse()->getBody()->getContents(), true),
+                // ], $e->getResponse()->getStatusCode());
+
+                $data['estado'] = 'error';
+                $data['response'] = json_decode($e->getResponse()->getBody()->getContents(), true);
+
             }
-            return response()->json(['error' => $e->getMessage()], 500);
+            $data['estado'] = 'error';
+            $data['response'] = $e->getMessage();
+            // return response()->json(['error' => $e->getMessage()], 500);
         }
+
+        return $data;
     }
 
-    public function enviarConsulta()
-    {
-        // Configurar el encabezado de la solicitud
-        $headers = [
-            'x-api-key'    => 'sec_C9VlPVIwkXzkuEfOxBsCbKZnQgZC8sqt',   // Reemplaza con tu clave API
-            'Content-Type' => 'application/json',
-        ];
+    public function enviarConsulta(Request $request){
 
-        // Preparar los datos del cuerpo de la solicitud
-        $data = [
-            'sourceId' => 'src_R7WPDJFiRwzGsXoLn8lpL', // Reemplaza con el ID correcto
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => '¿Cual es el ARTÍCULO 41?',
+        if($request->ajax()){
+
+            $documento_id = $request->input('documento');
+            $consulta     = $request->input('message');
+
+            $documento = Documento::find($documento_id);
+
+            // Configurar el encabezado de la solicitud
+            $headers = [
+                'x-api-key'    => env('CHATPDF_API_KEY'),   // Reemplaza con tu clave API
+                'Content-Type' => 'application/json',
+            ];
+
+            // Preparar los datos del cuerpo de la solicitud
+            $data = [
+                "referenceSources"=> true,
+                'sourceId' => $documento->sourceId, // Reemplaza con el ID correcto
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => $consulta,
+                    ],
                 ],
-            ],
-        ];
+            ];
 
-        try {
-            // Realizar la solicitud POST
-            $response = Http::withHeaders($headers)
-                ->post('https://api.chatpdf.com/v1/chats/message', $data);
+            try {
+                // Realizar la solicitud POST
+                $response = Http::withHeaders($headers)
+                    ->post('https://api.chatpdf.com/v1/chats/message', $data);
 
-            // Comprobar si la respuesta fue exitosa
-            if ($response->successful()) {
-                // Obtener el contenido de la respuesta
-                $result = $response->json();
-                return response()->json([
-                    'content' => $result['content']
-                ]);
-            } else {
-                // Manejar errores si la respuesta no fue exitosa
-                return response()->json([
-                    'error' => 'Error en la consulta a la API',
-                    'details' => $response->json(),
-                ], $response->status());
+                // Comprobar si la respuesta fue exitosa
+                if ($response->successful()) {
+                    // Obtener el contenido de la respuesta
+                    $result = $response->json();
+
+                    $data['estado']  = 'success';
+                    $data['message'] = 'La coneccion fue un exito!';
+                    $data['details'] = $result;
+                    $data['content'] = $result['content'];
+
+                    // return response()->json([
+                    //     'content' => $result['content']
+                    // ]);
+
+                } else {
+
+                    $data['estado']  = 'error';
+                    $data['message'] = 'Error en la consulta a la API';
+                    $data['details'] = $response->json();
+
+                    // // Manejar errores si la respuesta no fue exitosa
+                    // return response()->json([
+                    //     'error' => 'Error en la consulta a la API',
+                    //     'details' => $response->json(),
+                    // ], $response->status());
+                }
+            } catch (\Exception $e) {
+                // Manejo de excepciones si ocurre algún error en la solicitud
+
+                $data['estado'] = 'error';
+                $data['message'] = $e->getMessage();
+
+                // return response()->json([
+                //     'error' => 'Ocurrió un error al hacer la solicitud',
+                //     'message' => $e->getMessage(),
+                // ], 500);
             }
-        } catch (\Exception $e) {
-            // Manejo de excepciones si ocurre algún error en la solicitud
-            return response()->json([
-                'error' => 'Ocurrió un error al hacer la solicitud',
-                'message' => $e->getMessage(),
-            ], 500);
+        }else{
+            $data['estado'] = 'error';
+            $data['mensaje'] = 'El objeto docuemnto es nulo';
         }
+
+        return $data;
     }
 
+    public function eliminarDocumentoChatPdf(Documento $documento){
+
+        $data = [];
+
+        if($documento != null){
+
+            // Configurar el encabezado de la solicitud
+            $headers = [
+                'x-api-key'    => env('CHATPDF_API_KEY'),   // Asegúrate de que esta clave esté en tu archivo .env
+                'Content-Type' => 'application/json',
+            ];
+
+            // Preparar los datos del cuerpo de la solicitud
+            $datos = [
+                'sources' => [$documento->sourceId], // Asegúrate de que sourceId sea correcto
+            ];
+
+            try {
+                // Realizar la solicitud POST
+                $response = Http::withHeaders($headers)
+                                ->post('https://api.chatpdf.com/v1/sources/delete', $datos);
+
+                // Comprobar si la respuesta fue exitosa
+                if ($response->successful()) {
+                    // Obtener el contenido de la respuesta
+                    $result = $response->json();
+
+                    $data['estado'] = 'success';
+                    $data['mensaje'] = 'Se procesó con éxito';
+                    $data['content'] = $result; // Aquí asumimos que la respuesta tiene datos útiles
+
+                } else {
+                    // Manejar errores si la respuesta no fue exitosa
+                    $data['estado']  = 'error';
+                    $data['mensaje'] = 'Error en la consulta a la API';
+                    $data['details'] = $response->json(); // Agregar detalles de la respuesta
+                }
+            } catch (\Exception $e) {
+                // Manejo de excepciones si ocurre algún error en la solicitud
+                $data['estado'] = 'error';
+                $data['mensaje'] = 'Ocurrió un error al hacer la solicitud';
+                $data['details'] = $e->getMessage(); // Agregar el mensaje de error
+            }
+
+        }else{
+            $data['estado'] = 'error';
+            $data['mensaje'] = 'El objeto docuemnto es nulo';
+        }
+
+        return $data;
+    }
 
 }

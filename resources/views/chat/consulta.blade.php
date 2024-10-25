@@ -124,12 +124,8 @@
     <div class="sidebar">
         <h2>Menú</h2>
         <ul>
-            {{-- <li><a href="#">Generar script DBeaver</a></li>
-            <li><a href="#">Rastrear usuarios en cPanel</a></li>
-            <li><a href="#">Error CORS en solicitud</a></li>
-            <li><a href="#">Factorización de una expresión</a></li> --}}
-            @foreach ( $documentos as  $d)
-                <li><a href="#">{{ $d->nombre }}</a></li>
+            @foreach ( $documentos as $doc)
+                <li><a onclick="marcarCategoria('{{ $doc->id }}')">{{ $doc->nombre }}</a></li>
             @endforeach
         </ul>
     </div>
@@ -137,6 +133,7 @@
     <div class="main-content">
         <div class="search-bar">
             <input type="text" placeholder="¿Con qué puedo ayudarte?" id="message" name="message">
+            <input type="hidden" id="categoria_id" name="categoria_id" value="0">
             <button onclick="enviarChat()">Enviar</button>
         </div>
 
@@ -157,6 +154,7 @@
 
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
 
@@ -190,64 +188,80 @@
 
 
     function enviarChat(){
-        console.log("che");
-
-        var message = $('#message').val();
-
-        // $.ajax({
-        //     url: "{{ url('chat/getResponse') }}",
-        //     type: 'POST',
-        //     data: {
-        //         message: message,
-        //         _token: '{{ csrf_token() }}'
-        //     },
-        //     success: function(data) {
-
-        //         console.log(data.responses[0].response);
-
-        //         // LIMPIAMOS LA CACHE
-        //         $('#texto').html("")
-        //         // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
-        //         let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
-        //         let velocidad = 100; // Velocidad de escritura (milisegundos)
-
-        //         metodoEscribiendo(mensajeDevuelto, 0, velocidad);
-
-        //         // $('#response').html('<p>Respuesta de ChatGPT: ' + data.response + '</p>');
-        //     },
-        //     error: function() {
-        //         $('#response').html('<p>Error al obtener la respuesta de ChatGPT.</p>');
-        //     }
-        // });
-
-        $.ajax({
-            url: "{{ url('chat/enviarConsulta') }}",
-            type: 'POST',
-            data: {
-                message: message,
-                _token : '{{ csrf_token() }}'
-            },
-            success: function(data) {
-
-                console.log(data);
+        let documento = $('#categoria_id').val()
+        if(documento != "0"){
+            var message = $('#message').val();
+            $.ajax({
+                url: "{{ url('chat/enviarConsulta') }}",
+                type: 'POST',
+                data: {
+                    message  : message,
+                    documento: documento,
+                    _token   : '{{ csrf_token() }}'
+                },
+                success: function(data) {
+                    if(data.estado === "success"){
+                        $('#texto').html("")
+                        let mensajeDevuelto = data.content;
+                        let velocidad       = 100;
+                        metodoEscribiendo(mensajeDevuelto, 0, velocidad);
+                    }else{
+                        Swal.fire({
+                            icon:'error',
+                            title: "Error!",
+                            text:  data.message,
+                        })
+                    }
+                },
+                error: function() {
+                    $('#response').html('<p>Error al obtener la respuesta de ChatGPT.</p>');
+                }
+            });
+        }else{
+            Swal.fire({
+                icon:'warning',
+                title: "Alerta!",
+                text:  "Debe seleccionar una categoria",
+            })
+        }
 
 
-                // console.log(data.responses[0].response);
 
-                // // LIMPIAMOS LA CACHE
-                // $('#texto').html("")
-                // // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
-                // let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
-                // let velocidad = 100; // Velocidad de escritura (milisegundos)
+        // console.log("che");
 
-                // metodoEscribiendo(mensajeDevuelto, 0, velocidad);
 
-                // // $('#response').html('<p>Respuesta de ChatGPT: ' + data.response + '</p>');
-            },
-            error: function() {
-                $('#response').html('<p>Error al obtener la respuesta de ChatGPT.</p>');
-            }
-        });
+
+        // // $.ajax({
+        // //     url: "{{ url('chat/getResponse') }}",
+        // //     type: 'POST',
+        // //     data: {
+        // //         message: message,
+        // //         _token: '{{ csrf_token() }}'
+        // //     },
+        // //     success: function(data) {
+
+        // //         console.log(data.responses[0].response);
+
+        // //         // LIMPIAMOS LA CACHE
+        // //         $('#texto').html("")
+        // //         // let mensajeDevuelto = data.response;  // Asignamos el mensaje devuelto por el servidor
+        // //         let mensajeDevuelto = data.responses[0].response;  // Asignamos el mensaje devuelto por el servidor
+        // //         let velocidad = 100; // Velocidad de escritura (milisegundos)
+
+        // //         metodoEscribiendo(mensajeDevuelto, 0, velocidad);
+
+        // //         // $('#response').html('<p>Respuesta de ChatGPT: ' + data.response + '</p>');
+        // //     },
+        // //     error: function() {
+        // //         $('#response').html('<p>Error al obtener la respuesta de ChatGPT.</p>');
+        // //     }
+        // // });
+
+
+    }
+
+    function marcarCategoria(categoria){
+        $('#categoria_id').val(categoria)
     }
 
 </script>

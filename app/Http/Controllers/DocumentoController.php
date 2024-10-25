@@ -42,7 +42,7 @@ class DocumentoController extends Controller
     public function agregarDocumento(Request $request)
     {
         if($request->ajax()){
-            // dd($request->all(), "s");
+
             $nombre       = $request->input('nombre');
             $descripcion  = $request->input('descripcion');
             $documento_id = $request->input('documento_id');
@@ -80,8 +80,51 @@ class DocumentoController extends Controller
             $documento->descripcion  = $descripcion;
             $documento->save();
 
-            $data['text']   = 'Se registro con exito!';
-            $data['estado'] = 'success';
+            if($documento_id == "0"){
+                $chatPdf = app(ChatController::class);
+                $resultado = $chatPdf->subirArchivo($documento);
+                if($resultado['estado'] == 'success'){
+                    $documento->sourceId = $resultado['sourceId'];
+                    $documento->save();
+
+                    $data['text']   = 'Se registro con exito!';
+                    $data['estado'] = 'success';
+                }else{
+                    $documento->usuario_eliminador_id = $usuario->id;
+                    $documento->save();
+                    Documento::destroy($documento->id);
+
+                    $data['text']   = 'No se puede subir el documento!';
+                    $data['estado'] = 'errro';
+                }
+            }
+
+        }else{
+            $data['text']   = 'No existe';
+            $data['estado'] = 'error';
+        }
+        return $data;
+    }
+
+    public function eliminarArchivo(Request $request){
+        if($request->ajax()){
+
+            $documento_id = $request->input('documento');
+            $documento    = Documento::find($documento_id);
+
+            $chatPdf = app(ChatController::class);
+
+            $data = $chatPdf->eliminarDocumentoChatPdf($documento);
+
+            if($data['estado'] == 'success'){
+
+                $usuario                          = Auth::user();
+                $documento->usuario_eliminador_id = $usuario->id;
+                $documento->save();
+
+                Documento::destroy($documento->id);
+
+            }
 
         }else{
             $data['text']   = 'No existe';

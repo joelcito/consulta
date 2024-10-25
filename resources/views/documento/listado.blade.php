@@ -26,7 +26,7 @@
                             <div class="col-md-12">
                                 <label class="fs-6 fw-semibold form-label mb-2 required">Nombre</label>
                                 <input type="text" class="form-control fw-bold form-control-solid" name="nombre" id="nombre" required>
-                                <input type="text" name="documento_id" id="documento_id">
+                                <input type="hidden" name="documento_id" id="documento_id">
                             </div>
                         </div>
                         <div class="row mt-5">
@@ -192,6 +192,27 @@
             }else{
                 $("#formulario_new_documento")[0].reportValidity();
             }
+        }
+
+        function eliminarArchivo(documento){
+            let datos = {documento:documento}
+            $.ajax({
+                url: "{{ url('documento/eliminarArchivo') }}",
+                method: "POST",
+                data: datos,
+                success: function (data) {
+                    if(data.estado === 'success'){
+                        ajaxListado();
+                    }else{
+                        Swal.fire({
+                            icon:'error',
+                            title: 'Error',
+                            text:  JSON.stringify(data.mensaje),
+                            // timer:1500
+                        })
+                    }
+                }
+            })
         }
    </script>
 @endsection

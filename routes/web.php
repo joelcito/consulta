@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function() {
         Route::get('/listado', [DocumentoController::class, 'listado']);
         Route::post('/ajaxListado', [DocumentoController::class, 'ajaxListado']);
         Route::post('/agregarDocumento', [DocumentoController::class, 'agregarDocumento']);
+        Route::post('/eliminarArchivo', [DocumentoController::class, 'eliminarArchivo']);
     });
 
     Route::prefix('/chat')->group(function(){

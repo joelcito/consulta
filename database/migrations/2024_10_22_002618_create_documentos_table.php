@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('nombre')->nullable();
             $table->string('documento')->nullable();
             $table->string('descripcion')->nullable();
+            $table->string('sourceId')->nullable();
 
             $table->string('estado')->nullable();
             $table->datetime('deleted_at')->nullable();

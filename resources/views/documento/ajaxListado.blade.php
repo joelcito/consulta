@@ -16,10 +16,10 @@
                 <td>{{ $d->descripcion }}</td>
                 <td>{{ $d->descripcion }}</td>
                 <td>
-                    <a href="{{ asset($d->documento) }}" target="_blank" class="btn btn-danger btn-icon btn-sm"><i class="fa fa-file-pdf"></i></a>
+                    <a href="{{ asset($d->documento) }}" target="_blank" class="btn btn-danger btn-icon btn-sm" title="Ver Documento"><i class="fa fa-file-pdf"></i></a>
                 </td>
                 <td>
-
+                    <button class="btn btn-icon btn-danger btn-sm" onclick="eliminarArchivo('{{ $d->id }}')" title="Eliminar Archivo"><i class="fa fa-trash"></i></button>
                 </td>
             </tr>
         @empty
