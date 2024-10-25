@@ -225,8 +225,6 @@
             })
         }
 
-
-
         // console.log("che");
 
 
